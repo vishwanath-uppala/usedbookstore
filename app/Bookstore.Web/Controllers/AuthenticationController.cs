@@ -2,7 +2,7 @@ using System;
 using System.Web;
 using BobsBookstoreClassic.Data;
 using Microsoft.AspNetCore.Mvc;
-using Bookstore.Domain;  // Add this line to import the Bookstore.Domain namespace
+
 
 namespace Bookstore.Web.Controllers
 {
@@ -17,7 +17,7 @@ namespace Bookstore.Web.Controllers
 
         public ActionResult LogOut()
         {
-            return Bookstore.Domain.BookstoreConfiguration.Get("Services/Authentication") == "aws" ? CognitoSignOut() : LocalSignOut();
+            return BookstoreConfiguration.Get("Services/Authentication") == "aws" ? CognitoSignOut() : LocalSignOut();
         }
 
         private ActionResult LocalSignOut()
