@@ -28,7 +28,7 @@ namespace Bookstore.Data.Repositories
                 .SingleAsync(x => x.Id == id);
         }
 
-        async Task<IEnumerable<Book>> IBookRepository.ListAsync(BookFilters filters, int pageIndex, int pageSize)
+        async Task<IPaginatedList<Book>> IBookRepository.ListAsync(BookFilters filters, int pageIndex, int pageSize)
         {
             var query = dbContext.Book.AsQueryable();
 
@@ -73,7 +73,11 @@ namespace Bookstore.Data.Repositories
                 .Include(x => x.BookType)
                 .Include(x => x.Condition);
 
-            return await query.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToListAsync();
+            var result = new PaginatedList<Book>(query, pageIndex, pageSize);
+
+            await result.PopulateAsync();
+
+            return result;
         }
 
         async Task<IPaginatedList<Book>> IBookRepository.ListAsync(string searchString, string sortBy, int pageIndex, int pageSize)
@@ -108,7 +112,11 @@ namespace Bookstore.Data.Repositories
                     break;
             }
 
-            return await query.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToListAsync();
+            var result = new PaginatedList<Book>(query, pageIndex, pageSize);
+
+            await result.PopulateAsync();
+
+            return result;
         }
 
         async Task IBookRepository.AddAsync(Book book)
