@@ -80,7 +80,7 @@ namespace Bookstore.Data.Repositories
             var totalCount = await query.CountAsync();
             var items = await query.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToListAsync();
 
-            return new PaginatedListWrapper<Offer>(items, totalCount, pageIndex, pageSize);
+            return (IPaginatedList<Offer>)new PaginatedListWrapper<Offer>(items, totalCount, pageIndex, pageSize);
         }
 
         async Task<IEnumerable<Offer>> IOfferRepository.ListAsync(string sub)
