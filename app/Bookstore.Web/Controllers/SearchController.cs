@@ -7,6 +7,7 @@ using Bookstore.Data.Books;
 using Bookstore.Data.Carts;
 using Bookstore.Data;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 
 namespace Bookstore.Web.Controllers
