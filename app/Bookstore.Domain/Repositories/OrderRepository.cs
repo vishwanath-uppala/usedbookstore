@@ -21,16 +21,6 @@ namespace Bookstore.Data.Repositories
         Task SaveChangesAsync();
     }
 
-    public interface IPaginatedList<T> : IEnumerable<T>
-    {
-        int PageIndex { get; }
-        int PageSize { get; }
-        int TotalCount { get; }
-        int TotalPages { get; }
-        bool HasPreviousPage { get; }
-        bool HasNextPage { get; }
-    }
-
     public class OrderRepository : IOrderRepository
     {
         private readonly ApplicationDbContext dbContext;
