@@ -8,7 +8,7 @@ namespace Bookstore.Data.ReferenceData
 {
     public interface IReferenceDataService
     {
-        Task<IPaginatedList<ReferenceDataItem>> GetReferenceDataAsync(ReferenceDataFilters filters, int pageIndex, int pageSize);
+        Task<Bookstore.Domain.IPaginatedList<ReferenceDataItem>> GetReferenceDataAsync(ReferenceDataFilters filters, int pageIndex, int pageSize);
 
         Task<IEnumerable<ReferenceDataItem>> GetAllReferenceDataAsync();
 
