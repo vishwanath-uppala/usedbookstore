@@ -67,7 +67,7 @@ namespace Bookstore.Data.Repositories
                 }).SingleOrDefaultAsync();
         }
 
-        async Task<IPaginatedList<Order>> IOrderRepository.ListAsync(OrderFilters filters, int pageIndex, int pageSize)
+        async Task<IEnumerable<Order>> IOrderRepository.ListAsync(OrderFilters filters, int pageIndex, int pageSize)
         {
             var query = dbContext.Order.AsQueryable();
 
@@ -92,11 +92,7 @@ namespace Bookstore.Data.Repositories
                 .Include(x => x.OrderItems)
                 .Include(x => x.OrderItems.Select(y => y.Book));
 
-            var result = new PaginatedList<Order>(query, pageIndex, pageSize);
-
-            await result.PopulateAsync();
-
-            return result;
+            return await query.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToListAsync();
         }
 
         async Task<IEnumerable<Order>> IOrderRepository.ListAsync(string sub)
