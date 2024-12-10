@@ -80,7 +80,7 @@ namespace Bookstore.Data.Repositories
 
             await result.PopulateAsync();
 
-            return result as IPaginatedList<Offer>;
+            return result;
         }
 
         public async Task<IEnumerable<Offer>> ListAsync(string sub)
