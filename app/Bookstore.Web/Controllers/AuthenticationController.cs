@@ -2,8 +2,6 @@ using System;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
 using BobsBookstoreClassic.Data;
-using Bookstore.Domain;
-using Bookstore.Data;
 
 namespace Bookstore.Web.Controllers
 {
@@ -18,7 +16,7 @@ namespace Bookstore.Web.Controllers
 
         public ActionResult LogOut()
         {
-            return Bookstore.Domain.BookstoreConfiguration.Get("Services/Authentication") == "aws" ? CognitoSignOut() : LocalSignOut();
+            return BookstoreConfiguration.Get("Services/Authentication") == "aws" ? CognitoSignOut() : LocalSignOut();
         }
 
         private ActionResult LocalSignOut()
