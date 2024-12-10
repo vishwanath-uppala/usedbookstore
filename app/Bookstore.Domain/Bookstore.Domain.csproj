@@ -31,7 +31,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="System.Linq.Queryable" Version="4.3.0" />
     <PackageReference Include="AWSSDK.SecurityToken" Version="3.7.100.14" />
     <PackageReference Include="EntityFramework" Version="6.5.1" />
   </ItemGroup>
