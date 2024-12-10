@@ -5,6 +5,7 @@ using Bookstore.Domain.Orders;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Bookstore.Data.Repositories;
 
 namespace Bookstore.Data.Offers
 {
@@ -25,7 +26,7 @@ namespace Bookstore.Data.Offers
 
     public class OfferService : IOfferService
     {
-        private readonly IOfferRepository offerRepository;
+        private readonly Bookstore.Data.Repositories.IOfferRepository offerRepository;
         private readonly ICustomerRepository customerRepository;
 
         public OfferService()
