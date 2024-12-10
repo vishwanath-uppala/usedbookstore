@@ -2,6 +2,7 @@ using Bookstore.Domain;
 using Bookstore.Domain.ReferenceData;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Bookstore.Data.Repositories;
 
 namespace Bookstore.Data.ReferenceData
 {
@@ -20,7 +21,7 @@ namespace Bookstore.Data.ReferenceData
 
     public class ReferenceDataService : IReferenceDataService
     {
-        private readonly IReferenceDataRepository referenceDataRepository;
+        private readonly Bookstore.Data.Repositories.IReferenceDataRepository referenceDataRepository;
 
         public ReferenceDataService()
         {
