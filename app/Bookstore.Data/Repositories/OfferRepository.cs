@@ -3,7 +3,6 @@ using Bookstore.Domain;
 using Bookstore.Domain.Offers;
 using Bookstore.Domain.Orders;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
@@ -77,10 +76,11 @@ namespace Bookstore.Data.Repositories
                 .Include(x => x.Condition)
                 .Include(x => x.Genre);
 
-            var result = await query.ToListAsync();
-            var totalCount = await query.CountAsync();
+            var result = new PaginatedList<Offer>(query, pageIndex, pageSize);
 
-            return new OfferPaginatedList(result, totalCount, pageIndex, pageSize);
+            await result.PopulateAsync();
+
+            return result;
         }
 
         public async Task<IEnumerable<Offer>> ListAsync(string sub)
@@ -98,32 +98,5 @@ namespace Bookstore.Data.Repositories
         {
             await dbContext.SaveChangesAsync();
         }
-    }
-
-    public class OfferPaginatedList : IPaginatedList<Offer>
-    {
-        private readonly List<Offer> _items;
-        private readonly int _totalCount;
-        private readonly int _pageIndex;
-        private readonly int _pageSize;
-
-        public OfferPaginatedList(List<Offer> items, int totalCount, int pageIndex, int pageSize)
-        {
-            _items = items;
-            _totalCount = totalCount;
-            _pageIndex = pageIndex;
-            _pageSize = pageSize;
-        }
-
-        public int PageIndex => _pageIndex;
-        public int TotalPages => (int)Math.Ceiling(_totalCount / (double)_pageSize);
-        public int TotalCount => _totalCount;
-        public bool HasPreviousPage => PageIndex > 1;
-        public bool HasNextPage => PageIndex < TotalPages;
-        public int PageSize => _pageSize;
-        public List<Offer> Items => _items;
-
-        public IEnumerator<Offer> GetEnumerator() => _items.GetEnumerator();
-        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     }
 }
