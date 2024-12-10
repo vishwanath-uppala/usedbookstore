@@ -10,9 +10,9 @@ namespace Bookstore.Data.Repositories
     {
         private readonly ApplicationDbContext dbContext;
 
-        public AddressRepository()
+        public AddressRepository(ApplicationDbContext dbContext)
         {
-            this.dbContext = ServiceProvider.GetApplicationDbContext();
+            this.dbContext = dbContext;
         }
 
         async Task IAddressRepository.DeleteAsync(string sub, int id)
