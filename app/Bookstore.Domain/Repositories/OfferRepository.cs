@@ -11,6 +11,17 @@ using System.Threading.Tasks;
 
 namespace Bookstore.Data.Repositories
 {
+    public interface IPaginatedList<T> : IEnumerable<T>
+    {
+        int PageIndex { get; }
+        int TotalPages { get; }
+        int TotalCount { get; }
+        bool HasPreviousPage { get; }
+        bool HasNextPage { get; }
+        int PageSize { get; }
+        IEnumerable<T> Items { get; }
+    }
+
     public class OfferRepository : IOfferRepository
     {
         private readonly ApplicationDbContext dbContext;
