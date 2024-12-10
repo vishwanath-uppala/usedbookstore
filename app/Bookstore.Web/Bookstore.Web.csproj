@@ -45,27 +45,6 @@
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="App_Data\" />
-    <Folder Include="Areas\" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Bookstore.Common\Bookstore.Common.csproj">
-      <Project>{368f04e5-5093-4987-99a1-92bf5c8e8673}</Project>
-      <Name>Bookstore.Common</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Bookstore.Data\Bookstore.Data.csproj">
-      <Project>{3212526f-2d18-4a21-9b14-8b045ebf96f4}</Project>
-      <Name>Bookstore.Data</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Bookstore.Domain\Bookstore.Domain.csproj">
-      <Project>{d38deaea-ce1c-4309-83c8-626d44ca5301}</Project>
-      <Name>Bookstore.Domain</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.SystemWebAdapters" Version="1.4.0" />
     <PackageReference Include="EntityFramework" Version="6.5.1" />
     <PackageReference Include="System.ValueTuple" Version="4.5.0" />
@@ -105,9 +84,32 @@
     <PackageReference Include="Microsoft.Extensions.Primitives" Version="8.0.0" />
     <PackageReference Include="System.Text.Json" Version="8.0.4" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="App_Data\" />
+    <Folder Include="Areas\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Bookstore.Common\Bookstore.Common.csproj">
+      <Project>{368f04e5-5093-4987-99a1-92bf5c8e8673}</Project>
+      <Name>Bookstore.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Bookstore.Data\Bookstore.Data.csproj">
+      <Project>{3212526f-2d18-4a21-9b14-8b045ebf96f4}</Project>
+      <Name>Bookstore.Data</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Bookstore.Domain\Bookstore.Domain.csproj">
+      <Project>{d38deaea-ce1c-4309-83c8-626d44ca5301}</Project>
+      <Name>Bookstore.Domain</Name>
+    </ProjectReference>
+  </ItemGroup>
   <ProjectExtensions>
     <VisualStudio>
       <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}" />
     </VisualStudio>
   </ProjectExtensions>
+  <Import Project="..\..\packages\EntityFramework.6.4.4\build\EntityFramework.targets" Condition="Exists('..\..\packages\EntityFramework.6.4.4\build\EntityFramework.targets')" />
+  <Import Project="..\..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.4.1.0\build\net472\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.targets" Condition="Exists('..\..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.4.1.0\build\net472\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.targets')" />
 </Project>
