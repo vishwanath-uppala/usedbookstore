@@ -6,38 +6,9 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Bookstore.Data.Repositories;
-using System.Linq;
 
 namespace Bookstore.Data.Offers
 {
-    public static class PaginatedListExtensions
-    {
-        public static Bookstore.Domain.IPaginatedList<T> ToDomainPaginatedList<T>(this Bookstore.Data.Repositories.IPaginatedList<T> list)
-        {
-            return new DomainPaginatedList<T>(list);
-        }
-
-        private class DomainPaginatedList<T> : Bookstore.Domain.IPaginatedList<T>
-        {
-            private readonly Bookstore.Data.Repositories.IPaginatedList<T> _innerList;
-
-            public DomainPaginatedList(Bookstore.Data.Repositories.IPaginatedList<T> innerList)
-            {
-                _innerList = innerList;
-            }
-
-            public IReadOnlyList<T> Items => _innerList.Items;
-            public int PageIndex => _innerList.PageIndex;
-            public int TotalPages => _innerList.TotalPages;
-            public int TotalCount => _innerList.TotalCount;
-            public bool HasPreviousPage => _innerList.HasPreviousPage;
-            public bool HasNextPage => _innerList.HasNextPage;
-
-            public Task PopulateAsync() => Task.CompletedTask;
-            public IList<int> GetPageList(int maxPages) => Enumerable.Range(1, Math.Min(maxPages, TotalPages)).ToList();
-        }
-    }
-
     public interface IOfferService
     {
         Task<Bookstore.Domain.IPaginatedList<Offer>> GetOffersAsync(OfferFilters filters, int pageIndex, int pageSize);
@@ -66,8 +37,7 @@ namespace Bookstore.Data.Offers
 
         public async Task<Bookstore.Domain.IPaginatedList<Offer>> GetOffersAsync(OfferFilters filters, int pageIndex, int pageSize)
         {
-            var result = await offerRepository.ListAsync(filters, pageIndex, pageSize);
-            return result.ToDomainPaginatedList();
+            return await offerRepository.ListAsync(filters, pageIndex, pageSize);
         }
 
         public async Task<IEnumerable<Offer>> GetOffersAsync(string sub)
