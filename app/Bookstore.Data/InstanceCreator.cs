@@ -46,7 +46,7 @@ namespace Bookstore.Data
 
         internal static IShoppingCartRepository GetShoppingCartRepository() => new ShoppingCartRepository();
 
-        internal static IReferenceDataRepository GetReferenceDataRepository() => new ReferenceDataRepository();
+        internal static Bookstore.Data.Repositories.IReferenceDataRepository GetReferenceDataRepository() => new ReferenceDataRepository();
 
         internal static IOfferRepository GetOfferRepository() => new OfferRepository(); 
     }
