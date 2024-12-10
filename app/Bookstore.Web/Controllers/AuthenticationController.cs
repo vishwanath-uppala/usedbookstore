@@ -16,8 +16,7 @@ namespace Bookstore.Web.Controllers
 
         public ActionResult LogOut()
         {
-            var authenticationService = BookstoreConfiguration.Get("Services/Authentication");
-            return authenticationService == "aws" ? CognitoSignOut() : LocalSignOut();
+            return BookstoreConfiguration.Get("Services/Authentication") == "aws" ? CognitoSignOut() : LocalSignOut();
         }
 
         private ActionResult LocalSignOut()
