@@ -76,9 +76,7 @@ namespace Bookstore.Data.Repositories
                 .Include(x => x.Condition)
                 .Include(x => x.Genre);
 
-
-
-            var result = new PaginatedList<Offer>(query, pageIndex, pageSize);
+            IPaginatedList<Offer> result = new PaginatedList<Offer>(query, pageIndex, pageSize);
 
             await result.PopulateAsync();
 
