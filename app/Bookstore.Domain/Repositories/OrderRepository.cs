@@ -9,6 +9,28 @@ using System.Threading.Tasks;
 
 namespace Bookstore.Data.Repositories
 {
+    public interface IOrderRepository
+    {
+        Task AddAsync(Order order);
+        Task<Order> GetAsync(int id);
+        Task<Order> GetAsync(int id, string sub);
+        Task<IEnumerable<Book>> ListBestSellingBooksAsync(int count);
+        Task<OrderStatistics> GetStatisticsAsync();
+        Task<IPaginatedList<Order>> ListAsync(OrderFilters filters, int pageIndex, int pageSize);
+        Task<IEnumerable<Order>> ListAsync(string sub);
+        Task SaveChangesAsync();
+    }
+
+    public interface IPaginatedList<T> : IEnumerable<T>
+    {
+        int PageIndex { get; }
+        int PageSize { get; }
+        int TotalCount { get; }
+        int TotalPages { get; }
+        bool HasPreviousPage { get; }
+        bool HasNextPage { get; }
+    }
+
     public class OrderRepository : IOrderRepository
     {
         private readonly ApplicationDbContext dbContext;
