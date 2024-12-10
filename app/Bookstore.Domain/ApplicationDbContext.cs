@@ -58,7 +58,7 @@ namespace Bookstore.Data
             modelBuilder.Entity<ShoppingCartItem>().HasKey(x => new { x.Id, x.ShoppingCartId });
             modelBuilder.Entity<ShoppingCartItem>().Property(x => x.Id).HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
 
-            Database.SetInitializer(new BookstoreDbInitializer());
+            // Database initialization is handled differently in EF Core
         }
     }
 }
