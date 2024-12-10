@@ -1,4 +1,4 @@
-﻿using Bookstore.Domain;
+using Bookstore.Domain;
 using Bookstore.Domain.Customers;
 using Bookstore.Domain.Offers;
 using Bookstore.Domain.Orders;
