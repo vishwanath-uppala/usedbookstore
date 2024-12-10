@@ -1,12 +1,13 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using System;
-using System.Web;
+using Microsoft.AspNetCore.Http;
+
 
 namespace Bookstore.Web.Helpers
 {
     public static class HttpContextExtensions
     {
-        public static string GetShoppingCartCorrelationId(this HttpContextBase context)
+        public static string GetShoppingCartCorrelationId(this HttpContext context)
         {
             var CookieKey = "ShoppingCartId";
 
