@@ -11,94 +11,94 @@ using System.Threading.Tasks;
 
 namespace Bookstore.Data.Repositories
 {
-public class OfferRepository : IOfferRepository
-{
-    private readonly ApplicationDbContext dbContext;
-
-    public OfferRepository(ApplicationDbContext dbContext)
+    public class OfferRepository : IOfferRepository
     {
-        this.dbContext = dbContext;
-    }
+        private readonly ApplicationDbContext dbContext;
 
-    public async Task<OfferStatistics> GetStatisticsAsync()
-    {
-        var startOfMonth = DateTime.UtcNow.StartOfMonth();
+        public OfferRepository(ApplicationDbContext dbContext)
+        {
+            this.dbContext = dbContext;
+        }
 
-        return await dbContext.Offer
-            .GroupBy(x => 1)
-            .Select(x => new OfferStatistics
+        public async Task<OfferStatistics> GetStatisticsAsync()
+        {
+            var startOfMonth = DateTime.UtcNow.StartOfMonth();
+
+            return await dbContext.Offer
+                .GroupBy(x => 1)
+                .Select(x => new OfferStatistics
+                {
+                    PendingOffers = x.Count(y => y.OfferStatus == OfferStatus.PendingApproval),
+                    OffersThisMonth = x.Count(y => y.CreatedOn >= startOfMonth),
+                    OffersTotal = x.Count()
+                }).SingleOrDefaultAsync();
+        }
+
+        async Task IOfferRepository.AddAsync(Offer offer)
+        {
+            await Task.Run(() => dbContext.Offer.Add(offer));
+        }
+
+        Task<Offer> IOfferRepository.GetAsync(int id)
+        {
+            return dbContext.Offer.Include(x => x.Customer).SingleOrDefaultAsync(x => x.Id == id);
+        }
+
+        public async Task<IPaginatedList<Offer>> ListAsync(OfferFilters filters, int pageIndex, int pageSize)
+        {
+            var query = dbContext.Offer.AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(filters.Author))
             {
-                PendingOffers = x.Count(y => y.OfferStatus == OfferStatus.PendingApproval),
-                OffersThisMonth = x.Count(y => y.CreatedOn >= startOfMonth),
-                OffersTotal = x.Count()
-            }).SingleOrDefaultAsync();
-    }
+                query = query.Where(x => x.Author.Contains(filters.Author));
+            }
 
-    async Task IOfferRepository.AddAsync(Offer offer)
-    {
-        await Task.Run(() => dbContext.Offer.Add(offer));
-    }
+            if (!string.IsNullOrWhiteSpace(filters.BookName))
+            {
+                query = query.Where(x => x.BookName.Contains(filters.BookName));
+            }
 
-    Task<Offer> IOfferRepository.GetAsync(int id)
-    {
-        return dbContext.Offer.Include(x => x.Customer).SingleOrDefaultAsync(x => x.Id == id);
-    }
+            if (filters.ConditionId.HasValue)
+            {
+                query = query.Where(x => x.ConditionId == filters.ConditionId);
+            }
 
-    async Task<IPaginatedList<Offer>> IOfferRepository.ListAsync(OfferFilters filters, int pageIndex, int pageSize)
-    {
-        var query = dbContext.Offer.AsQueryable();
+            if (filters.GenreId.HasValue)
+            {
+                query = query.Where(x => x.GenreId == filters.GenreId);
+            }
 
-        if (!string.IsNullOrWhiteSpace(filters.Author))
-        {
-            query = query.Where(x => x.Author.Contains(filters.Author));
+            if (filters.OfferStatus.HasValue)
+            {
+                query = query.Where(x => x.OfferStatus == filters.OfferStatus);
+            }
+
+            query = query.Include(x => x.Customer)
+                .Include(x => x.Condition)
+                .Include(x => x.Genre);
+
+            var totalCount = await query.CountAsync();
+            var items = await query.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToListAsync();
+
+            return new PaginatedListWrapper<Offer>(items, totalCount, pageIndex, pageSize);
         }
 
-        if (!string.IsNullOrWhiteSpace(filters.BookName))
+        async Task<IEnumerable<Offer>> IOfferRepository.ListAsync(string sub)
         {
-            query = query.Where(x => x.BookName.Contains(filters.BookName));
+            return await dbContext.Offer
+                .Include(x => x.BookType)
+                .Include(x => x.Genre)
+                .Include(x => x.Condition)
+                .Include(x => x.Publisher)
+                .Where(x => x.Customer.Sub == sub)
+                .ToListAsync();
         }
 
-        if (filters.ConditionId.HasValue)
+        async Task IOfferRepository.SaveChangesAsync()
         {
-            query = query.Where(x => x.ConditionId == filters.ConditionId);
+            await dbContext.SaveChangesAsync();
         }
-
-        if (filters.GenreId.HasValue)
-        {
-            query = query.Where(x => x.GenreId == filters.GenreId);
-        }
-
-        if (filters.OfferStatus.HasValue)
-        {
-            query = query.Where(x => x.OfferStatus == filters.OfferStatus);
-        }
-
-        query = query.Include(x => x.Customer)
-            .Include(x => x.Condition)
-            .Include(x => x.Genre);
-
-        var totalCount = await query.CountAsync();
-        var items = await query.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToListAsync();
-
-        return new PaginatedListWrapper<Offer>(items, totalCount, pageIndex, pageSize);
     }
-
-    async Task<IEnumerable<Offer>> IOfferRepository.ListAsync(string sub)
-    {
-        return await dbContext.Offer
-            .Include(x => x.BookType)
-            .Include(x => x.Genre)
-            .Include(x => x.Condition)
-            .Include(x => x.Publisher)
-            .Where(x => x.Customer.Sub == sub)
-            .ToListAsync();
-    }
-
-    async Task IOfferRepository.SaveChangesAsync()
-    {
-        await dbContext.SaveChangesAsync();
-    }
-}
 
     public class PaginatedListWrapper<T> : IPaginatedList<T>
     {
