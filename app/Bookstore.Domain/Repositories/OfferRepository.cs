@@ -3,6 +3,7 @@ using Bookstore.Domain;
 using Bookstore.Domain.Offers;
 using Bookstore.Domain.Orders;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
@@ -43,45 +44,44 @@ namespace Bookstore.Data.Repositories
             return dbContext.Offer.Include(x => x.Customer).SingleOrDefaultAsync(x => x.Id == id);
         }
 
-public async Task<IPaginatedList<Offer>> ListAsync(OfferFilters filters, int pageIndex, int pageSize)
-{
-    var query = dbContext.Offer.AsQueryable();
+        public async Task<IPaginatedList<Offer>> ListAsync(OfferFilters filters, int pageIndex, int pageSize)
+        {
+            var query = dbContext.Offer.AsQueryable();
 
-    if (!string.IsNullOrWhiteSpace(filters.Author))
-    {
-        query = query.Where(x => x.Author.Contains(filters.Author));
-    }
+            if (!string.IsNullOrWhiteSpace(filters.Author))
+            {
+                query = query.Where(x => x.Author.Contains(filters.Author));
+            }
 
-    if (!string.IsNullOrWhiteSpace(filters.BookName))
-    {
-        query = query.Where(x => x.BookName.Contains(filters.BookName));
-    }
+            if (!string.IsNullOrWhiteSpace(filters.BookName))
+            {
+                query = query.Where(x => x.BookName.Contains(filters.BookName));
+            }
 
-    if (filters.ConditionId.HasValue)
-    {
-        query = query.Where(x => x.ConditionId == filters.ConditionId);
-    }
+            if (filters.ConditionId.HasValue)
+            {
+                query = query.Where(x => x.ConditionId == filters.ConditionId);
+            }
 
-    if (filters.GenreId.HasValue)
-    {
-        query = query.Where(x => x.GenreId == filters.GenreId);
-    }
+            if (filters.GenreId.HasValue)
+            {
+                query = query.Where(x => x.GenreId == filters.GenreId);
+            }
 
-    if (filters.OfferStatus.HasValue)
-    {
-        query = query.Where(x => x.OfferStatus == filters.OfferStatus);
-    }
+            if (filters.OfferStatus.HasValue)
+            {
+                query = query.Where(x => x.OfferStatus == filters.OfferStatus);
+            }
 
-    query = query.Include(x => x.Customer)
-        .Include(x => x.Condition)
-        .Include(x => x.Genre);
+            query = query.Include(x => x.Customer)
+                .Include(x => x.Condition)
+                .Include(x => x.Genre);
 
-    var result = new PaginatedList<Offer>(query, pageIndex, pageSize);
+            var totalCount = await query.CountAsync();
+            var items = await query.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToListAsync();
 
-    await result.PopulateAsync();
-
-    return result;
-}
+            return new PaginatedListWrapper<Offer>(items, totalCount, pageIndex, pageSize);
+        }
 
         async Task<IEnumerable<Offer>> IOfferRepository.ListAsync(string sub)
         {
@@ -98,5 +98,32 @@ public async Task<IPaginatedList<Offer>> ListAsync(OfferFilters filters, int pag
         {
             await dbContext.SaveChangesAsync();
         }
+    }
+
+    public class PaginatedListWrapper<T> : IPaginatedList<T>
+    {
+        private readonly List<T> _items;
+        private readonly int _totalCount;
+        private readonly int _pageIndex;
+        private readonly int _pageSize;
+
+        public PaginatedListWrapper(List<T> items, int totalCount, int pageIndex, int pageSize)
+        {
+            _items = items;
+            _totalCount = totalCount;
+            _pageIndex = pageIndex;
+            _pageSize = pageSize;
+        }
+
+        public int PageIndex => _pageIndex;
+        public int TotalPages => (int)Math.Ceiling(_totalCount / (double)_pageSize);
+        public int TotalCount => _totalCount;
+        public bool HasPreviousPage => PageIndex > 1;
+        public bool HasNextPage => PageIndex < TotalPages;
+        public int PageSize => _pageSize;
+        public IEnumerable<T> Items => _items;
+
+        public IEnumerator<T> GetEnumerator() => _items.GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     }
 }
