@@ -28,7 +28,7 @@ namespace Bookstore.Data.ReferenceData
             this.referenceDataRepository = InstanceCreator.GetReferenceDataRepository();
         }
 
-        public async Task<IPaginatedList<ReferenceDataItem>> GetReferenceDataAsync(ReferenceDataFilters filters, int pageIndex, int pageSize)
+        public async Task<Bookstore.Domain.IPaginatedList<ReferenceDataItem>> GetReferenceDataAsync(ReferenceDataFilters filters, int pageIndex, int pageSize)
         {
             return await referenceDataRepository.ListAsync(filters, pageIndex, pageSize);
         }
