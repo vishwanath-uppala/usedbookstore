@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
+using Bookstore.Domain.Common; // Assuming PaginatedList<> is in this namespace
 
 namespace Bookstore.Data.Repositories
 {
