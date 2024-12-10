@@ -23,6 +23,7 @@ public class PaginatedList<T> : List<T>, IPaginatedList<T>
     public int PageSize { get; private set; }
     public int TotalCount { get; private set; }
     public int TotalPages { get; private set; }
+    public IEnumerable<T> Items => this;
 
     public PaginatedList(IQueryable<T> source, int pageIndex, int pageSize)
     {
