@@ -61,7 +61,7 @@ namespace Bookstore.Data.Repositories
             return await dbContext.ReferenceData.ToListAsync();
         }
 
-    public async Task<PaginatedList<ReferenceDataItem>> ListAsync(ReferenceDataFilters filters, int pageIndex, int pageSize)
+    public Task<IPaginatedList<ReferenceDataItem>> ListAsync(ReferenceDataFilters filters, int pageIndex, int pageSize)
     {
         var query = dbContext.ReferenceData.AsQueryable();
 
@@ -70,7 +70,9 @@ namespace Bookstore.Data.Repositories
             query = query.Where(x => x.DataType == filters.ReferenceDataType.Value);
         }
 
-        return await Task.FromResult(new PaginatedList<ReferenceDataItem>(query, pageIndex, pageSize));
+        var result = new PaginatedList<ReferenceDataItem>(query, pageIndex, pageSize);
+
+        return Task.FromResult<IPaginatedList<ReferenceDataItem>>(result);
     }
 
         public async Task SaveChangesAsync()
