@@ -11,7 +11,7 @@ namespace Bookstore.Data.Offers
 {
     public interface IOfferService
     {
-        Task<IPaginatedList<Offer>> GetOffersAsync(OfferFilters filters, int pageIndex, int pageSize);
+        Task<Bookstore.Domain.IPaginatedList<Offer>> GetOffersAsync(OfferFilters filters, int pageIndex, int pageSize);
 
         Task<IEnumerable<Offer>> GetOffersAsync(string sub);
 
