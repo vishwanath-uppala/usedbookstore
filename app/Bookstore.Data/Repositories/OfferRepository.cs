@@ -33,17 +33,17 @@ namespace Bookstore.Data.Repositories
                 }).SingleOrDefaultAsync();
         }
 
-        async Task IOfferRepository.AddAsync(Offer offer)
+        public async Task AddAsync(Offer offer)
         {
             await Task.Run(() => dbContext.Offer.Add(offer));
         }
 
-        Task<Offer> IOfferRepository.GetAsync(int id)
+        public Task<Offer> GetAsync(int id)
         {
             return dbContext.Offer.Include(x => x.Customer).SingleOrDefaultAsync(x => x.Id == id);
         }
 
-        async Task<IPaginatedList<Offer>> IOfferRepository.ListAsync(OfferFilters filters, int pageIndex, int pageSize)
+        public async Task<IPaginatedList<Offer>> ListAsync(OfferFilters filters, int pageIndex, int pageSize)
         {
             var query = dbContext.Offer.AsQueryable();
 
@@ -75,8 +75,6 @@ namespace Bookstore.Data.Repositories
             query = query.Include(x => x.Customer)
                 .Include(x => x.Condition)
                 .Include(x => x.Genre);
-         
-                
 
             var result = new PaginatedList<Offer>(query, pageIndex, pageSize);
 
@@ -85,7 +83,7 @@ namespace Bookstore.Data.Repositories
             return result;
         }
 
-        async Task<IEnumerable<Offer>> IOfferRepository.ListAsync(string sub)
+        public async Task<IEnumerable<Offer>> ListAsync(string sub)
         {
             return await dbContext.Offer
                 .Include(x => x.BookType)
@@ -96,7 +94,7 @@ namespace Bookstore.Data.Repositories
                 .ToListAsync();
         }
 
-        async Task IOfferRepository.SaveChangesAsync()
+        public async Task SaveChangesAsync()
         {
             await dbContext.SaveChangesAsync();
         }
