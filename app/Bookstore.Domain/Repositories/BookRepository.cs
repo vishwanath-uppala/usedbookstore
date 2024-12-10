@@ -73,11 +73,10 @@ namespace Bookstore.Data.Repositories
                 .Include(x => x.BookType)
                 .Include(x => x.Condition);
 
-            var result = new PaginatedList<Book>(query, pageIndex, pageSize);
+            var totalCount = await query.CountAsync();
+            var items = await query.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToListAsync();
 
-            await result.PopulateAsync();
-
-            return result;
+            return new PaginatedList<Book>(items, totalCount, pageIndex, pageSize);
         }
 
         async Task<IPaginatedList<Book>> IBookRepository.ListAsync(string searchString, string sortBy, int pageIndex, int pageSize)
@@ -108,15 +107,14 @@ namespace Bookstore.Data.Repositories
                     break;
 
                 default:
-                    query.OrderBy(x => x.Name);
+                    query = query.OrderBy(x => x.Name);
                     break;
             }
 
-            var result = new PaginatedList<Book>(query, pageIndex, pageSize);
+            var totalCount = await query.CountAsync();
+            var items = await query.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToListAsync();
 
-            await result.PopulateAsync();
-
-            return result;
+            return new PaginatedList<Book>(items, totalCount, pageIndex, pageSize);
         }
 
         async Task IBookRepository.AddAsync(Book book)
