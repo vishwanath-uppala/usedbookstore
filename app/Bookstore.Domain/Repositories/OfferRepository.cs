@@ -11,6 +11,27 @@ using System.Threading.Tasks;
 
 namespace Bookstore.Data.Repositories
 {
+    public interface IPaginatedList<T> : IEnumerable<T>
+    {
+        int PageIndex { get; }
+        int TotalPages { get; }
+        int TotalCount { get; }
+        bool HasPreviousPage { get; }
+        bool HasNextPage { get; }
+        int PageSize { get; }
+        IEnumerable<T> Items { get; }
+    }
+
+    public interface IOfferRepository
+    {
+        Task<OfferStatistics> GetStatisticsAsync();
+        Task AddAsync(Offer offer);
+        Task<Offer> GetAsync(int id);
+        Task<IPaginatedList<Offer>> ListAsync(OfferFilters filters, int pageIndex, int pageSize);
+        Task<IEnumerable<Offer>> ListAsync(string sub);
+        Task SaveChangesAsync();
+    }
+
     public class OfferRepository : IOfferRepository
     {
         private readonly ApplicationDbContext dbContext;
@@ -34,12 +55,12 @@ namespace Bookstore.Data.Repositories
                 }).SingleOrDefaultAsync();
         }
 
-        async Task IOfferRepository.AddAsync(Offer offer)
+        public async Task AddAsync(Offer offer)
         {
             await Task.Run(() => dbContext.Offer.Add(offer));
         }
 
-        Task<Offer> IOfferRepository.GetAsync(int id)
+        public Task<Offer> GetAsync(int id)
         {
             return dbContext.Offer.Include(x => x.Customer).SingleOrDefaultAsync(x => x.Id == id);
         }
@@ -83,7 +104,7 @@ namespace Bookstore.Data.Repositories
             return new PaginatedListWrapper<Offer>(items, totalCount, pageIndex, pageSize);
         }
 
-        async Task<IEnumerable<Offer>> IOfferRepository.ListAsync(string sub)
+        public async Task<IEnumerable<Offer>> ListAsync(string sub)
         {
             return await dbContext.Offer
                 .Include(x => x.BookType)
@@ -94,7 +115,7 @@ namespace Bookstore.Data.Repositories
                 .ToListAsync();
         }
 
-        async Task IOfferRepository.SaveChangesAsync()
+        public async Task SaveChangesAsync()
         {
             await dbContext.SaveChangesAsync();
         }
