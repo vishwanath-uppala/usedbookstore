@@ -6,6 +6,7 @@ using Bookstore.Web.ViewModel.Home;
 using Bookstore.Data;
 using Bookstore.Data.Books;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 
 namespace Bookstore.Web.Controllers
