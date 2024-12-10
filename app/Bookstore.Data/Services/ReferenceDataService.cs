@@ -30,7 +30,7 @@ namespace Bookstore.Data.ReferenceData
 
         public async Task<Bookstore.Domain.IPaginatedList<ReferenceDataItem>> GetReferenceDataAsync(ReferenceDataFilters filters, int pageIndex, int pageSize)
         {
-            return await referenceDataRepository.ListAsync(filters, pageIndex, pageSize);
+            return (Bookstore.Domain.IPaginatedList<ReferenceDataItem>)await referenceDataRepository.ListAsync(filters, pageIndex, pageSize);
         }
 
         public async Task<IEnumerable<ReferenceDataItem>> GetAllReferenceDataAsync()
