@@ -80,7 +80,7 @@ namespace Bookstore.Data.Repositories
 
             await result.PopulateAsync();
 
-            return result;
+            return new PaginatedListWrapper<Offer>(result);
         }
 
         public async Task<IEnumerable<Offer>> ListAsync(string sub)
@@ -98,5 +98,22 @@ namespace Bookstore.Data.Repositories
         {
             await dbContext.SaveChangesAsync();
         }
+    }
+
+    public class PaginatedListWrapper<T> : IPaginatedList<T>
+    {
+        private readonly PaginatedList<T> _innerList;
+
+        public PaginatedListWrapper(PaginatedList<T> innerList)
+        {
+            _innerList = innerList;
+        }
+
+        public int PageIndex => _innerList.PageIndex;
+        public int TotalPages => _innerList.TotalPages;
+        public int TotalCount => _innerList.TotalCount;
+        public bool HasPreviousPage => _innerList.HasPreviousPage;
+        public bool HasNextPage => _innerList.HasNextPage;
+        public List<T> Items => _innerList.Items;
     }
 }
