@@ -40,7 +40,7 @@ namespace Bookstore.Data.Books
             this.imageValidationService = InstanceCreator.GetLocalImageValidationService();
             this.fileService = InstanceCreator.GetLocalFileService();
             this.bookRepository = (IBookRepository)InstanceCreator.GetBookRepository();
-            this.orderRepository = InstanceCreator.GetOrderRepository();
+            this.orderRepository = (IOrderRepository)InstanceCreator.GetOrderRepository();
         }
 
         public BookService(IImageResizeService imageResizeService, IImageValidationService imageValidationService, IFileService fileService, IBookRepository bookRepository, IOrderRepository orderRepository)
