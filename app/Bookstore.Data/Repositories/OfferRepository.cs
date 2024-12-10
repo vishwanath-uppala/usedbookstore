@@ -3,7 +3,6 @@ using Bookstore.Domain;
 using Bookstore.Domain.Offers;
 using Bookstore.Domain.Orders;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
@@ -81,7 +80,7 @@ namespace Bookstore.Data.Repositories
 
             await result.PopulateAsync();
 
-            return new PaginatedListWrapper<Offer>(result);
+            return result;
         }
 
         public async Task<IEnumerable<Offer>> ListAsync(string sub)
@@ -99,26 +98,5 @@ namespace Bookstore.Data.Repositories
         {
             await dbContext.SaveChangesAsync();
         }
-    }
-
-    public class PaginatedListWrapper<T> : IPaginatedList<T>
-    {
-        private readonly PaginatedList<T> _innerList;
-
-        public PaginatedListWrapper(PaginatedList<T> innerList)
-        {
-            _innerList = innerList;
-        }
-
-        public int PageIndex => _innerList.PageIndex;
-        public int TotalPages => _innerList.TotalPages;
-        public int TotalCount => _innerList.TotalCount;
-        public bool HasPreviousPage => _innerList.HasPreviousPage;
-        public bool HasNextPage => _innerList.HasNextPage;
-        public int PageSize => _innerList.PageSize;
-        public List<T> Items => _innerList.Items;
-
-        public IEnumerator<T> GetEnumerator() => _innerList.GetEnumerator();
-        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     }
 }
