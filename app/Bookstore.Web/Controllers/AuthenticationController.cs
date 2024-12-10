@@ -2,7 +2,6 @@ using System;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
 using BobsBookstoreClassic.Data;
-using Bookstore.Data;
 
 namespace Bookstore.Web.Controllers
 {
@@ -17,7 +16,7 @@ namespace Bookstore.Web.Controllers
 
         public ActionResult LogOut()
         {
-            return Bookstore.Data.BookstoreConfiguration.Get("Services/Authentication") == "aws" ? CognitoSignOut() : LocalSignOut();
+            return BookstoreConfiguration.Get("Services/Authentication") == "aws" ? CognitoSignOut() : LocalSignOut();
         }
 
         private ActionResult LocalSignOut()
@@ -37,8 +36,8 @@ namespace Bookstore.Web.Controllers
                 Response.Cookies.Delete(".AspNet.Cookies");
             }
 
-            var domain = Bookstore.Data.BookstoreConfiguration.Get("Authentication/Cognito/CognitoDomain");
-            var clientId = Bookstore.Data.BookstoreConfiguration.Get("Authentication/Cognito/LocalClientId");
+            var domain = BookstoreConfiguration.Get("Authentication/Cognito/CognitoDomain");
+            var clientId = BookstoreConfiguration.Get("Authentication/Cognito/LocalClientId");
             var logoutUri = $"{Request.Scheme}://{Request.Host}/";
 
             return Redirect($"{domain}/logout?client_id={clientId}&logout_uri={logoutUri}");
