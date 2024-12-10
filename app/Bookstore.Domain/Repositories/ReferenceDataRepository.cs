@@ -9,33 +9,33 @@ using System.Threading.Tasks;
 
 namespace Bookstore.Data.Repositories
 {
-public class PaginatedList<T> : List<T>, IPaginatedList<T>
-{
-    public int PageIndex { get; private set; }
-    public int PageSize { get; private set; }
-    public int TotalCount { get; private set; }
-    public int TotalPages { get; private set; }
-
-    public PaginatedList(List<T> items, int pageIndex, int pageSize, int totalCount)
+    public class PaginatedList<T> : List<T>, IPaginatedList<T>
     {
-        PageIndex = pageIndex;
-        PageSize = pageSize;
-        TotalCount = totalCount;
-        TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
+        public int PageIndex { get; private set; }
+        public int PageSize { get; private set; }
+        public int TotalCount { get; private set; }
+        public int TotalPages { get; private set; }
 
-        AddRange(items);
+        public PaginatedList(IQueryable<T> source, int pageIndex, int pageSize)
+        {
+            PageIndex = pageIndex;
+            PageSize = pageSize;
+            TotalCount = source.Count();
+            TotalPages = (int)Math.Ceiling(TotalCount / (double)pageSize);
+
+            this.AddRange(source.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList());
+        }
+
+        public bool HasPreviousPage => PageIndex > 1;
+
+        public bool HasNextPage => PageIndex < TotalPages;
+
+        public Task PopulateAsync()
+        {
+            // Implement if needed
+            return Task.CompletedTask;
+        }
     }
-
-    public bool HasPreviousPage => PageIndex > 1;
-
-    public bool HasNextPage => PageIndex < TotalPages;
-
-    public Task PopulateAsync()
-    {
-        // Implement if needed
-        return Task.CompletedTask;
-    }
-}
 
     public class ReferenceDataRepository : IReferenceDataRepository
     {
@@ -61,7 +61,7 @@ public class PaginatedList<T> : List<T>, IPaginatedList<T>
             return await dbContext.ReferenceData.ToListAsync();
         }
 
-    public async Task<IPaginatedList<ReferenceDataItem>> ListAsync(ReferenceDataFilters filters, int pageIndex, int pageSize)
+    public Task<IPaginatedList<ReferenceDataItem>> ListAsync(ReferenceDataFilters filters, int pageIndex, int pageSize)
     {
         var query = dbContext.ReferenceData.AsQueryable();
 
@@ -70,10 +70,9 @@ public class PaginatedList<T> : List<T>, IPaginatedList<T>
             query = query.Where(x => x.DataType == filters.ReferenceDataType.Value);
         }
 
-        var items = await query.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToListAsync();
-        var totalCount = await query.CountAsync();
+        var result = new PaginatedList<ReferenceDataItem>(query, pageIndex, pageSize);
 
-        return new PaginatedList<ReferenceDataItem>(items, pageIndex, pageSize, totalCount);
+        return Task.FromResult<IPaginatedList<ReferenceDataItem>>(result);
     }
 
         public async Task SaveChangesAsync()
