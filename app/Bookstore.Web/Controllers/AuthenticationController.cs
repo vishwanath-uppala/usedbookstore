@@ -8,6 +8,13 @@ namespace Bookstore.Web.Controllers
 {
     public class AuthenticationController : Controller
     {
+        private readonly IBookstoreConfiguration _bookstoreConfiguration;
+
+        public AuthenticationController(IBookstoreConfiguration bookstoreConfiguration)
+        {
+            _bookstoreConfiguration = bookstoreConfiguration;
+        }
+
         public ActionResult Login(string redirectUri = null)
         {
             if(string.IsNullOrWhiteSpace(redirectUri)) return RedirectToAction("Index", "Home");
@@ -17,7 +24,7 @@ namespace Bookstore.Web.Controllers
 
         public ActionResult LogOut()
         {
-            return BookstoreConfiguration.Get("Services/Authentication") == "aws" ? CognitoSignOut() : LocalSignOut();
+            return _bookstoreConfiguration.Get("Services/Authentication") == "aws" ? CognitoSignOut() : LocalSignOut();
         }
 
         private ActionResult LocalSignOut()
