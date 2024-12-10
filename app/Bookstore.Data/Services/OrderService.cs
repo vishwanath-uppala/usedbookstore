@@ -35,7 +35,7 @@ namespace Bookstore.Data.Orders
 
         public OrderService()
         {
-            this.orderRepository = InstanceCreator.GetOrderRepository();
+            this.orderRepository = (Bookstore.Domain.Orders.IOrderRepository)InstanceCreator.GetOrderRepository();
             this.shoppingCartRepository = InstanceCreator.GetShoppingCartRepository();
             this.customerRepository = InstanceCreator.GetCustomerRepository();
         }
