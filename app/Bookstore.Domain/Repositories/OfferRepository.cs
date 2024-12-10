@@ -43,7 +43,7 @@ namespace Bookstore.Data.Repositories
             return dbContext.Offer.Include(x => x.Customer).SingleOrDefaultAsync(x => x.Id == id);
         }
 
-        Task<IPaginatedList<Offer>> IOfferRepository.ListAsync(OfferFilters filters, int pageIndex, int pageSize)
+        async Task<IPaginatedList<Offer>> IOfferRepository.ListAsync(OfferFilters filters, int pageIndex, int pageSize)
         {
             var query = dbContext.Offer.AsQueryable();
 
@@ -75,44 +75,14 @@ namespace Bookstore.Data.Repositories
             query = query.Include(x => x.Customer)
                 .Include(x => x.Condition)
                 .Include(x => x.Genre);
+         
+                
 
-            return Task.FromResult<IPaginatedList<Offer>>(new PaginatedList<Offer>(query, pageIndex, pageSize));
-        }
+            var result = new PaginatedList<Offer>(query, pageIndex, pageSize);
 
-        async Task<IEnumerable<Offer>> IOfferRepository.ListAsync(OfferFilters filters, int pageIndex, int pageSize)
-        {
-            var query = dbContext.Offer.AsQueryable();
+            await result.PopulateAsync();
 
-            if (!string.IsNullOrWhiteSpace(filters.Author))
-            {
-                query = query.Where(x => x.Author.Contains(filters.Author));
-            }
-
-            if (!string.IsNullOrWhiteSpace(filters.BookName))
-            {
-                query = query.Where(x => x.BookName.Contains(filters.BookName));
-            }
-
-            if (filters.ConditionId.HasValue)
-            {
-                query = query.Where(x => x.ConditionId == filters.ConditionId);
-            }
-
-            if (filters.GenreId.HasValue)
-            {
-                query = query.Where(x => x.GenreId == filters.GenreId);
-            }
-
-            if (filters.OfferStatus.HasValue)
-            {
-                query = query.Where(x => x.OfferStatus == filters.OfferStatus);
-            }
-
-            query = query.Include(x => x.Customer)
-                .Include(x => x.Condition)
-                .Include(x => x.Genre);
-
-            return await query.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToListAsync();
+            return result;
         }
 
         async Task<IEnumerable<Offer>> IOfferRepository.ListAsync(string sub)
