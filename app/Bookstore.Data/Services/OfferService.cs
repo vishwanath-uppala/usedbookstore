@@ -37,12 +37,31 @@ namespace Bookstore.Data.Offers
 
         public async Task<Bookstore.Domain.IPaginatedList<Offer>> GetOffersAsync(OfferFilters filters, int pageIndex, int pageSize)
         {
-            return await offerRepository.ListAsync(filters, pageIndex, pageSize);
+            var result = await offerRepository.ListAsync(filters, pageIndex, pageSize);
+            return new DomainPaginatedList<Offer>(result.Items, result.PageIndex, result.TotalPages, result.TotalCount);
         }
 
         public async Task<IEnumerable<Offer>> GetOffersAsync(string sub)
         {
             return await offerRepository.ListAsync(sub);
+        }
+
+        private class DomainPaginatedList<T> : Bookstore.Domain.IPaginatedList<T>
+        {
+            public IReadOnlyList<T> Items { get; }
+            public int PageIndex { get; }
+            public int TotalPages { get; }
+            public int TotalCount { get; }
+            public bool HasPreviousPage => PageIndex > 1;
+            public bool HasNextPage => PageIndex < TotalPages;
+
+            public DomainPaginatedList(IReadOnlyList<T> items, int pageIndex, int totalPages, int totalCount)
+            {
+                Items = items;
+                PageIndex = pageIndex;
+                TotalPages = totalPages;
+                TotalCount = totalCount;
+            }
         }
 
         public async Task<Offer> GetOfferAsync(int id)
