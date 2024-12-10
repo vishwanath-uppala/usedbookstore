@@ -35,7 +35,7 @@ namespace Bookstore.Data.Offers
             this.customerRepository = InstanceCreator.GetCustomerRepository();
         }
 
-        public async Task<IPaginatedList<Offer>> GetOffersAsync(OfferFilters filters, int pageIndex, int pageSize)
+        public async Task<Bookstore.Domain.IPaginatedList<Offer>> GetOffersAsync(OfferFilters filters, int pageIndex, int pageSize)
         {
             return await offerRepository.ListAsync(filters, pageIndex, pageSize);
         }
