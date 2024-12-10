@@ -24,26 +24,27 @@ namespace Bookstore.Data.Offers
         Task<OfferStatistics> GetStatisticsAsync();
     }
 
-    public class OfferService : IOfferService
+public class OfferService : IOfferService
+{
+    private readonly Bookstore.Data.Repositories.IOfferRepository offerRepository;
+    private readonly ICustomerRepository customerRepository;
+
+    public OfferService()
     {
-        private readonly Bookstore.Data.Repositories.IOfferRepository offerRepository;
-        private readonly ICustomerRepository customerRepository;
+        this.offerRepository = InstanceCreator.GetOfferRepository();
+        this.customerRepository = InstanceCreator.GetCustomerRepository();
+    }
 
-        public OfferService()
-        {
-            this.offerRepository = InstanceCreator.GetOfferRepository();
-            this.customerRepository = InstanceCreator.GetCustomerRepository();
-        }
+    public async Task<Bookstore.Domain.IPaginatedList<Offer>> GetOffersAsync(OfferFilters filters, int pageIndex, int pageSize)
+    {
+        var result = await offerRepository.ListAsync(filters, pageIndex, pageSize);
+        return (Bookstore.Domain.IPaginatedList<Offer>)result;
+    }
 
-        public async Task<Bookstore.Domain.IPaginatedList<Offer>> GetOffersAsync(OfferFilters filters, int pageIndex, int pageSize)
-        {
-            return await offerRepository.ListAsync(filters, pageIndex, pageSize);
-        }
-
-        public async Task<IEnumerable<Offer>> GetOffersAsync(string sub)
-        {
-            return await offerRepository.ListAsync(sub);
-        }
+    public async Task<IEnumerable<Offer>> GetOffersAsync(string sub)
+    {
+        return await offerRepository.ListAsync(sub);
+    }
 
         public async Task<Offer> GetOfferAsync(int id)
         {
