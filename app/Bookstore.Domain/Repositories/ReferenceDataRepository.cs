@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 
 namespace Bookstore.Data.Repositories
 {
+
     public class ReferenceDataRepository : IReferenceDataRepository
     {
         private readonly ApplicationDbContext dbContext;
@@ -42,34 +43,16 @@ namespace Bookstore.Data.Repositories
                 query = query.Where(x => x.DataType == filters.ReferenceDataType.Value);
             }
 
-            var totalCount = await query.CountAsync();
-            var items = await query.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToListAsync();
+            var result = new PaginatedList<ReferenceDataItem>(query, pageIndex, pageSize);
 
-            return new PaginatedList<ReferenceDataItem>(items, totalCount, pageIndex, pageSize);
+            await result.PopulateAsync();
+
+            return result;
         }
 
         public async Task SaveChangesAsync()
         {
             await dbContext.SaveChangesAsync();
         }
-    }
-
-    public class PaginatedList<T> : IPaginatedList<T>
-    {
-        public List<T> Items { get; }
-        public int PageIndex { get; }
-        public int TotalPages { get; }
-        public int TotalCount { get; }
-
-        public PaginatedList(List<T> items, int count, int pageIndex, int pageSize)
-        {
-            PageIndex = pageIndex;
-            TotalPages = (int)Math.Ceiling(count / (double)pageSize);
-            TotalCount = count;
-            Items = items;
-        }
-
-        public bool HasPreviousPage => PageIndex > 1;
-        public bool HasNextPage => PageIndex < TotalPages;
     }
 }
