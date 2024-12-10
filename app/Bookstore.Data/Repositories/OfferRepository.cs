@@ -43,7 +43,7 @@ namespace Bookstore.Data.Repositories
             return dbContext.Offer.Include(x => x.Customer).SingleOrDefaultAsync(x => x.Id == id);
         }
 
-        async Task<PaginatedList<Offer>> IOfferRepository.ListAsync(OfferFilters filters, int pageIndex, int pageSize)
+        async Task<IPaginatedList<Offer>> IOfferRepository.ListAsync(OfferFilters filters, int pageIndex, int pageSize)
         {
             var query = dbContext.Offer.AsQueryable();
 
