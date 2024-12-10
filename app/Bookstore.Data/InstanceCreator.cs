@@ -48,6 +48,6 @@ namespace Bookstore.Data
 
         internal static Bookstore.Data.Repositories.IReferenceDataRepository GetReferenceDataRepository() => new ReferenceDataRepository();
 
-        internal static IOfferRepository GetOfferRepository() => new OfferRepository(); 
+        internal static Bookstore.Data.Repositories.IOfferRepository GetOfferRepository() => new OfferRepository(); 
     }
 }
