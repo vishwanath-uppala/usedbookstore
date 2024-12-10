@@ -47,7 +47,7 @@ namespace Bookstore.Data.Repositories
 
             await result.PopulateAsync();
 
-            return result;
+            return (IPaginatedList<ReferenceDataItem>)result;
         }
 
         public async Task SaveChangesAsync()
